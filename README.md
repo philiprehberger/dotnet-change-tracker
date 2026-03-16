@@ -1,5 +1,9 @@
 # Philiprehberger.ChangeTracker
 
+[![CI](https://github.com/philiprehberger/dotnet-change-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/dotnet-change-tracker/actions/workflows/ci.yml)
+[![NuGet](https://img.shields.io/nuget/v/Philiprehberger.ChangeTracker.svg)](https://www.nuget.org/packages/Philiprehberger.ChangeTracker)
+[![License](https://img.shields.io/github/license/philiprehberger/dotnet-change-tracker)](LICENSE)
+
 Track and diff property changes on objects over time for audit logging.
 
 ## Install
@@ -94,6 +98,12 @@ ChangeSet restored = ChangeSet.FromJson(json);
 | `[TrackChanges]` | Class | Required. Opts a class into change tracking |
 | `[IgnoreChanges]` | Property | Excludes the property from tracking |
 | `[SensitiveProperty]` | Property | Masks old/new values with `"***"` in change records |
+
+## Development
+
+```bash
+dotnet build src/Philiprehberger.ChangeTracker.csproj --configuration Release
+```
 
 ## License
 
