@@ -6,7 +6,7 @@
 
 Track and diff property changes on objects over time for audit logging.
 
-## Install
+## Installation
 
 ```bash
 dotnet add package Philiprehberger.ChangeTracker
