@@ -3,6 +3,7 @@
 [![CI](https://github.com/philiprehberger/dotnet-change-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/dotnet-change-tracker/actions/workflows/ci.yml)
 [![NuGet](https://img.shields.io/nuget/v/Philiprehberger.ChangeTracker.svg)](https://www.nuget.org/packages/Philiprehberger.ChangeTracker)
 [![License](https://img.shields.io/github/license/philiprehberger/dotnet-change-tracker)](LICENSE)
+[![Sponsor](https://img.shields.io/badge/sponsor-GitHub%20Sponsors-ec6cb9)](https://github.com/sponsors/philiprehberger)
 
 Track and diff property changes on objects over time for audit logging.
 
