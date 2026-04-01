@@ -48,6 +48,74 @@ IReadOnlyList<PropertyChange> changes = tracker.GetChanges();
 // ]
 ```
 
+### Nested Object Tracking
+
+Properties that are complex objects are tracked recursively with dot-notation paths:
+
+```csharp
+public class Address
+{
+    public string City { get; set; } = "";
+    public string Street { get; set; } = "";
+}
+
+[TrackChanges]
+public class Customer
+{
+    public string Name { get; set; } = "";
+    public Address Address { get; set; } = new();
+}
+
+var customer = new Customer
+{
+    Name = "Alice",
+    Address = new Address { City = "Berlin", Street = "Main St" }
+};
+var tracker = ChangeTracker.For(customer);
+
+customer.Address.City = "Munich";
+
+var changes = tracker.GetChanges();
+// PropertyChange { PropertyName = "Address.City", OldValue = "Berlin", NewValue = "Munich" }
+```
+
+### Collection Diff
+
+When a tracked list property changes, individual element additions, removals, and modifications are reported:
+
+```csharp
+[TrackChanges]
+public class Order
+{
+    public List<string> Items { get; set; } = new();
+}
+
+var order = new Order { Items = new List<string> { "Apple", "Banana" } };
+var tracker = ChangeTracker.For(order);
+
+order.Items = new List<string> { "Apple", "Cherry", "Date" };
+
+var changes = tracker.GetChanges();
+// changes[0].CollectionDiff.Changes:
+//   CollectionChange { Index = 1, Kind = Modified, OldValue = "Banana", NewValue = "Cherry" }
+//   CollectionChange { Index = 2, Kind = Added, OldValue = null, NewValue = "Date" }
+```
+
+### Rollback
+
+Revert the tracked object to its snapshot state:
+
+```csharp
+var user = new User { Name = "Alice", Email = "alice@example.com" };
+var tracker = ChangeTracker.For(user);
+
+user.Name = "Bob";
+user.Email = "bob@example.com";
+
+tracker.Rollback();
+// user.Name == "Alice", user.Email == "alice@example.com"
+```
+
 ### JSON Serialization
 
 ```csharp
@@ -71,15 +139,32 @@ ChangeSet restored = ChangeSet.FromJson(json);
 |--------|-------------|
 | `GetChanges()` | Returns an `IReadOnlyList<PropertyChange>` of properties that differ from the snapshot |
 | `GetChangeSet()` | Returns a `ChangeSet` wrapping all changes with type metadata and timestamp |
+| `Rollback()` | Reverts the tracked object to the snapshot state taken at construction time |
 
 ### `PropertyChange`
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `PropertyName` | `string` | Name of the changed property |
+| `PropertyName` | `string` | Name of the changed property (dot-notation for nested properties) |
 | `OldValue` | `object?` | Original value (masked as `"***"` for sensitive properties) |
 | `NewValue` | `object?` | Current value (masked as `"***"` for sensitive properties) |
 | `Timestamp` | `DateTimeOffset` | When the change was detected |
+| `CollectionDiff` | `CollectionDiff?` | Element-level diff for collection properties, `null` otherwise |
+
+### `CollectionDiff`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `Changes` | `IReadOnlyList<CollectionChange>` | Individual element changes within the collection |
+
+### `CollectionChange`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `Index` | `int` | Zero-based index of the element |
+| `Kind` | `CollectionChangeKind` | `Added`, `Removed`, or `Modified` |
+| `OldValue` | `object?` | Original value (`null` for additions) |
+| `NewValue` | `object?` | Current value (`null` for removals) |
 
 ### `ChangeSet`
 
@@ -103,6 +188,7 @@ ChangeSet restored = ChangeSet.FromJson(json);
 
 ```bash
 dotnet build src/Philiprehberger.ChangeTracker.csproj --configuration Release
+dotnet test tests/Philiprehberger.ChangeTracker.Tests/Philiprehberger.ChangeTracker.Tests.csproj --configuration Release
 ```
 
 ## Support

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0 (2026-03-31)
+
+- Add nested object tracking with dot-notation paths (e.g. `Address.City`)
+- Add collection diff reporting individual element additions, removals, and modifications
+- Add `Rollback()` method to revert a tracked object to its snapshot state
+- Add `CollectionDiff`, `CollectionChange`, and `CollectionChangeKind` types
+- Add optional `CollectionDiff` property to `PropertyChange` record
+
 ## 0.1.7 (2026-03-31)
 
 - Standardize README to 3-badge format with emoji Support section
